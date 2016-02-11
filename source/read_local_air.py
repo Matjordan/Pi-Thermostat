@@ -32,6 +32,7 @@ def read_local_air():
 
 	bmp_temp = bmp.read_temperature()
 	htu_temp = htu.read_temperature()
+
 	humidity = htu.read_humidity()
 	baro_press = bmp.read_pressure()
 

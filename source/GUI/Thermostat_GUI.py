@@ -28,8 +28,8 @@ import threading
 import time
 import os
 import sys
-from PyQt4.QtCore import pyqtSlot,SIGNAL,SLOT,Qt
-from PyQt4.QtGui import *
+from PyQt5.QtCore import pyqtSlot,SIGNAL,SLOT,Qt
+from PyQt5.QtGui import *
 
 ON = 1
 OFF = 0
