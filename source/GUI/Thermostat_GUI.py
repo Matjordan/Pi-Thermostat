@@ -23,18 +23,13 @@
 
 #import read_local_air as local_air
 from queue import Queue
+import mysql.connector
+from datetime import datetime, date
 import time
 import os
 import sys
 from PyQt4.QtCore import pyqtSlot,SIGNAL,SLOT,Qt
 from PyQt4.QtGui import *
-
-
-
-
-
-
-
 
 # create our window
 app = QApplication(sys.argv)
@@ -127,12 +122,14 @@ sett.setFont(font)
         #print(fan_state)
         #sett.display(str(desired_temp)+'\'')
         #realt.display(str(int(loc_feel))+'\'')
-        realt.setText('{0:0.1f}\xb0F'.format(loc_feel))
-        sett.setText('{0:0.0f}\xb0F'.format(desired_temp))
-        humDisp.setText('{0:0.1f}%'.format(loc_hum))
+global desired_temp
+desired_temp = 10
+realt.setText('{0:0.1f}\xb0F'.format(25))
+sett.setText('{0:0.0f}\xb0F'.format(desired_temp))
+humDisp.setText('{0:0.1f}%'.format(25))
 
-        #humDisp.display(loc_hum)
-        time.sleep(1)
+#humDisp.display(loc_hum)
+time.sleep(1)
 
 def increase_temp(self):
        global desired_temp
@@ -215,7 +212,4 @@ if __name__ == '__main__':
          while True:
              pass
      finally:
-         GPIO.cleanup()
-	
-	
-
+         pass
