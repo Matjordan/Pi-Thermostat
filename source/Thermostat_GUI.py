@@ -7,46 +7,84 @@ import threading
 from PyQt4.QtCore import pyqtSlot,SIGNAL,SLOT,Qt
 from PyQt4.QtGui import *
 
+set_mode=0
+
 @pyqtSlot()
 def coolOn():
     global set_mode
     if not cool.isChecked():
         #print('Cooling')
-        set_mode = COOL_MODE
+        set_mode = 1
         #print(set_mode)
         if heat.isChecked():
             heat.toggle()
     else:
-        set_mode = OFF_MODE
+        set_mode = 0
  
 @pyqtSlot()
 def heatOn():
     global set_mode
     if not heat.isChecked():
         #print('Heating')
-        set_mode = HEAT_MODE
+        set_mode = -1
         if cool.isChecked():
             cool.toggle()
     else:
-        set_mode = OFF_MODE
+        set_mode = 0
+
+@pyqtSlot()
+def forceFan():
+    global set_mode
+    if not fan.isChecked():
+        #print('Heating')
+        set_mode = 3
+    else:
+        set_mode = 0
 
 def increase_temp(self):
-        query = ("UPDATE status SET set_temp=set_temp+1 WHERE room = '{}' ".format(room))
-        cursor.execute(query)
-        database.commit()
-        time.sleep(0.5)
+
+    global set_temp
+    set_temp+=1
+##        cursor = database.cursor()
+##        try:
+##            query = ("UPDATE status SET set_temp=set_temp+1 WHERE room = '{}' ".format(room))
+##            cursor.execute(query)
+##            database.commit()
+##        except:
+##            print('index')
+##            w.deleteLater()
+##            app.quit()
+##        cursor.close()
 
 def decrease_temp(self):
-        query = ("UPDATE status SET set_temp=set_temp-1 WHERE room = '{}' ".format(room))
-        cursor.execute(query)
-        database.commit()
-        time.sleep(0.5)
+    global set_temp
+    set_temp-=1
+##        try:
+##            query1 = ("UPDATE status SET set_temp=set_temp-1 WHERE room = '{}' ".format(room))
+##            cursor1.execute(query1)
+##            database.commit()
+##        except:
+##            print('index')
+##            w.deleteLater()
+##            app.quit()
 
 def gui_run():
+    global set_temp
     while True:
-        query = ("SELECT feel_temp,on_off,heat,cool,humidity,set_temp FROM status WHERE room = '{}' ".format(room))
-        cursor.execute(query)
-        result=cursor.fetchall()
+        if not( down.isDown() or up.isDown()):
+            query2 = ("SELECT feel_temp,on_off,heat,cool,humidity FROM status WHERE room = '{}' ".format(room))
+            try:
+                cursor2.execute(query2)
+                result=cursor2.fetchall()
+            except:
+                    print('error')
+                    w.deleteLater()
+                    app.quit()
+            finally:
+                database.commit()
+                
+        query2=("UPDATE status SET set_temp={}, on_off ={} WHERE room={}".format(set_temp,set_mode,room))
+        cursor2.execute(query2)
         database.commit()
 
         real_temp = result[0][0]
@@ -54,7 +92,7 @@ def gui_run():
         heat = result[0][2]
         cool = result[0][3]
         humidity = result[0][4]
-        set_temp = result[0][5]
+##        set_temp = result[0][5]
         
         realt.setText('{0:0.1f}\xb0F'.format(real_temp))
         sett.setText('{0:0.0f}\xb0F'.format(set_temp))
@@ -64,9 +102,16 @@ def gui_run():
 
 database= mysql.connector.connect(user='root', password='thermo',host='127.0.0.1',database='thermostat')
 
-cursor = database.cursor()
 
+cursor1 = database.cursor()
+cursor2 = database.cursor()
 room =0
+
+query2 = ("SELECT set_temp FROM status WHERE room = '{}' ".format(room))
+cursor2.execute(query2)
+result=cursor2.fetchall()
+set_temp=result[0][0]
+database.commit()
 
 # create our window
 app = QApplication(sys.argv)
@@ -95,8 +140,9 @@ down.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Expanding)
 
 cool = QPushButton('Cool',w)
 cool.setCheckable(True)
-
-heat = QPushButton('heat',w)
+fan = QPushButton('Fan',w)
+fan.setCheckable(True)
+heat = QPushButton('Heat',w)
 heat.setCheckable(True)
 
 #create Labels
@@ -126,6 +172,7 @@ buttons.addWidget(down)
 
 setting = QVBoxLayout()
 setting.addWidget(cool)
+setting.addWidget(fan)
 setting.addWidget(heat)
 
 hbox = QHBoxLayout()
@@ -134,10 +181,17 @@ hbox.addLayout(temps)
 hbox.addLayout(buttons)
 
 # connect the signals to the slots
+up.setAutoRepeat(True)
+up.setAutoRepeatDelay(1000)
+up.setAutoRepeatInterval(500)
+down.setAutoRepeat(True)
+down.setAutoRepeatDelay(1000)
+down.setAutoRepeatInterval(500)
 up.clicked.connect(increase_temp)
 down.clicked.connect(decrease_temp)
 print('hi')
 cool.pressed.connect(coolOn)
+fan.pressed.connect(forceFan)
 heat.pressed.connect(heatOn)
 
 
@@ -149,13 +203,15 @@ thr2=threading.Thread(target = gui_run)
 thr2.setDaemon(True)
 thr2.start()
 
-app.exec_()
+
+
 
 
 if __name__ == '__main__':
      try:
-         while True:
-             pass
+         sys.exit(app.exec_())
+         print('help')
+
              
      finally:
         print('bye')

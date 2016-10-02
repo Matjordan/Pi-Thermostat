@@ -56,13 +56,13 @@ def run():
         heat=0
         if (real_temp > set_temp+1) and cool==0:
             cool=1
-        if (real_temp < set_temp-2):
+        if (real_temp < set_temp-1):
             cool=0
     elif on_off==-1:
         cool=0
         if (real_temp < set_temp-1) and heat==0:
             heat=1
-        if (real_temp > set_temp+2):
+        if (real_temp > set_temp+1):
             heat=0
     elif on_off==2: #override for cool always on
         cool=1
@@ -77,10 +77,11 @@ def run():
     else:
         heat=0
         cool=0
+        fan=0
         
-    if heat or cool:
+    if (heat or cool) and on_off < 3:
         fan=1
-    else:
+    elif on_off < 3:
         fan=0
         
     vent=100 #default room vent always open

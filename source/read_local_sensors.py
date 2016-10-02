@@ -26,7 +26,7 @@ import mysql.connector
 
 def apparent_temp(t,RH):
     Tf=t*1.8+32
-    if Tf >= 70 and RH >= 40:
+    if Tf >= 75 and RH >= 40:
         app_temp = -42.379+2.04901523*(Tf)+10.14333127*(RH)-0.22475541*(Tf)*(RH)-6.83783*10**(-3)*(Tf**(2))-5.481717*10**(-2)*(RH**(2))+1.22874*10**(-3)*(Tf**(2))*(RH)+8.5282*10**(-4)*(Tf)*(RH**(2))-1.99*10**(-6)*(Tf**(2))*(RH**(2))
     else:
         app_temp = Tf
@@ -43,7 +43,7 @@ def read():
     local_press = local[2]/100.0
     local_feel_f =apparent_temp(local[0],local[1])
     local_temp = local_temp_f
-
+    local_feel_f = local_temp_f
     query = "UPDATE status SET temp = {},humidity = {},feel_temp = {},pressure = {} where room = 0".format(local_temp_f,local_hum,local_feel_f,local_press)
     cursor.execute(query)
     database.commit()

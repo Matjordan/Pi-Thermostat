@@ -26,7 +26,7 @@ import os
 import HTU21D
 
 def read_local_air():
-	calOffSet = -3.5
+	calOffSet = 0
 	htu =HTU21D.HTU21D()
 	bmp = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
 
