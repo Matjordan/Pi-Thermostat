@@ -1,6 +1,6 @@
 #logging
 
-file = open('~/thermo_log.csv',w)
+file = open('../../thermo_log.csv','w')
 
 import mysql.connector
 import time
@@ -21,10 +21,10 @@ while True:
         humidity = result[0][4]
         set_temp = result[0][5]
         
-        file.write(set_temp)
+        file.write(str(set_temp))
         file.write(',')
-        file.write(real_temp)
+        file.write(str(real_temp))
         file.write(',')
-        file.write(humidity)
+        file.write(str(humidity))
         file.write(';')
         time.sleep(10)
