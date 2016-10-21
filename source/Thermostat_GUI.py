@@ -12,9 +12,11 @@ set_mode=0
 @pyqtSlot()
 def coolOn():
     global set_mode
+    global override
     if not cool.isChecked():
         #print('Cooling')
         set_mode = 1
+        override = 0
         #print(set_mode)
         if heat.isChecked():
             heat.toggle()
@@ -44,7 +46,9 @@ def forceFan():
 def increase_temp(self):
 
     global set_temp
+    global override
     set_temp+=1
+    override = 1
 ##        cursor = database.cursor()
 ##        try:
 ##            query = ("UPDATE status SET set_temp=set_temp+1 WHERE room = '{}' ".format(room))
@@ -58,7 +62,9 @@ def increase_temp(self):
 
 def decrease_temp(self):
     global set_temp
+    global override
     set_temp-=1
+    override = 1
 ##        try:
 ##            query1 = ("UPDATE status SET set_temp=set_temp-1 WHERE room = '{}' ".format(room))
 ##            cursor1.execute(query1)
@@ -70,6 +76,7 @@ def decrease_temp(self):
 
 def gui_run():
     global set_temp
+    global override
     while True:
         if not( down.isDown() or up.isDown()):
             query2 = ("SELECT feel_temp,on_off,heat,cool,humidity FROM status WHERE room = '{}' ".format(room))
@@ -83,7 +90,7 @@ def gui_run():
             finally:
                 database.commit()
                 
-        query2=("UPDATE status SET set_temp={}, on_off ={} WHERE room={}".format(set_temp,set_mode,room))
+        query2=("UPDATE status SET override={}, set_temp={}, on_off ={} WHERE room={}".format(override,set_temp,set_mode,room))
         cursor2.execute(query2)
         database.commit()
 
