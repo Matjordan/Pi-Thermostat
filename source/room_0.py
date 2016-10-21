@@ -24,6 +24,11 @@ def run():
         result=cursor.fetchall()
         set_temp=result[0][0]
         
+        if hour == 0: #reset override
+            query2=("UPDATE status SET override=0 WHERE room={}".format(room))
+            cursor2.execute(query2)
+            database.commit()
+        
         
     elif override == 0: #no override of temp using database
         # daily temp set
