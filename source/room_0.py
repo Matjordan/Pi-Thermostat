@@ -9,6 +9,7 @@ cursor = database.cursor()
 def run():
     today=date.today()
     hour=datetime.today().hour
+    day = datetime.now().strftime("%A")
     room=0 #default room
 
     query = ("SELECT override FROM status WHERE room = '{}' ".format(room))
@@ -22,8 +23,12 @@ def run():
         cursor.execute(query)
         result=cursor.fetchall()
         set_temp=result[0][0]
+        
+        
     elif override == 0: #no override of temp using database
-        query = ("SELECT t{}00 FROM room_{} WHERE day = '{}' ".format(hour,room,today))
+        # daily temp set
+        #query = ("SELECT t{}00 FROM room_{} WHERE day = '{}' ".format(hour,room,today))
+        query = ("SELECT {} FROM room_{}_week where time = '{}' ".format(day,room,hour))
         cursor.execute(query)
         result=cursor.fetchall()
 
